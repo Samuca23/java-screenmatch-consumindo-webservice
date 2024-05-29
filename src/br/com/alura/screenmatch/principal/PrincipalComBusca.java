@@ -13,14 +13,26 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class PrincipalComBusca {
 
     public static void main(String[] args) throws IOException, InterruptedException {
         Scanner scanner = new Scanner(System.in);
+        String filme = "";
+        List<Titulo> titulos = new ArrayList<>();
+
+
+        while (!filme.equalsIgnoreCase("sair")) {
         System.out.println("Qual o filme você deseja?");
-        var filme = scanner.nextLine();
+        filme = scanner.nextLine();
+
+        if (filme.equalsIgnoreCase("sair")) {
+            break;
+        }
+
         String path = "https://www.omdbapi.com/?t=" + filme.replace(" ", "+") + "&apikey=82afe8c1";
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -51,6 +63,7 @@ public class PrincipalComBusca {
             System.out.println("Algum erro de argumento na busca, verifique o endereço");
         } catch (ErroDeAnoConversaoException e) {
             System.out.println(e.getMensagem());
+        }
         }
         System.out.println("O programaga finalizou corretamente");
     }
