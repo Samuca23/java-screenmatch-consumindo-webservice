@@ -24,47 +24,49 @@ public class PrincipalComBusca {
         String filme = "";
         List<Titulo> titulos = new ArrayList<>();
 
-
-        while (!filme.equalsIgnoreCase("sair")) {
-        System.out.println("Qual o filme você deseja?");
-        filme = scanner.nextLine();
-
-        if (filme.equalsIgnoreCase("sair")) {
-            break;
-        }
-
-        String path = "https://www.omdbapi.com/?t=" + filme.replace(" ", "+") + "&apikey=82afe8c1";
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(path))
-                .build();
-        HttpResponse<String> response = client
-                .send(request, HttpResponse.BodyHandlers.ofString());
-
-        String json = response.body();
-        System.out.println(json);
-
         Gson gson = new GsonBuilder()
                 .setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE)
+                .setPrettyPrinting()
                 .create();
-        TituloOmdb meuTituloOmdb = gson.fromJson(json, TituloOmdb.class);
-        try {
-            Titulo meuTitulo = new Titulo(meuTituloOmdb);
-            System.out.println(meuTituloOmdb);
-            System.out.println(meuTitulo);
 
-            FileWriter escrita = new FileWriter("filmes.txt");
-            escrita.write(meuTitulo.toString());
-            escrita.close();
-        } catch (NumberFormatException e) {
-            System.out.println("Aconteceu um erro: ");
-            System.out.println(e.getMessage());
-        } catch (IllegalArgumentException e) {
-            System.out.println("Algum erro de argumento na busca, verifique o endereço");
-        } catch (ErroDeAnoConversaoException e) {
-            System.out.println(e.getMensagem());
+        while (!filme.equalsIgnoreCase("sair")) {
+            System.out.println("Qual o filme você deseja?");
+            filme = scanner.nextLine();
+
+            if (filme.equalsIgnoreCase("sair")) {
+                break;
+            }
+
+            String path = "https://www.omdbapi.com/?t=" + filme.replace(" ", "+") + "&apikey=82afe8c1";
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(path))
+                    .build();
+            HttpResponse<String> response = client
+                    .send(request, HttpResponse.BodyHandlers.ofString());
+
+            String json = response.body();
+            System.out.println(json);
+
+            TituloOmdb meuTituloOmdb = gson.fromJson(json, TituloOmdb.class);
+            try {
+                Titulo meuTitulo = new Titulo(meuTituloOmdb);
+                System.out.println(meuTituloOmdb);
+                System.out.println(meuTitulo);
+
+                titulos.add(meuTitulo);
+            } catch (NumberFormatException e) {
+                System.out.println("Aconteceu um erro: ");
+                System.out.println(e.getMessage());
+            } catch (IllegalArgumentException e) {
+                System.out.println("Algum erro de argumento na busca, verifique o endereço");
+            } catch (ErroDeAnoConversaoException e) {
+                System.out.println(e.getMensagem());
+            }
         }
-        }
+        FileWriter escrita = new FileWriter("filmes.json");
+        escrita.write(gson.toJson(titulos));
+        escrita.close();
         System.out.println("O programaga finalizou corretamente");
     }
 
